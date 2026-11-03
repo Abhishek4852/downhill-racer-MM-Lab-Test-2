@@ -64,12 +64,12 @@ Upon crossing the finish line (or stage completion), the result screen displays 
 
 The game supports both desktop keyboard navigation and mobile/touch drag inputs:
 
-| Control Action | Primary Key | Secondary Key | Touch / Mouse |
+| Control Action | Primary Key | Secondary Key | Mobile Touch / Mouse |
 | :--- | :--- | :--- | :--- |
-| **Steer Left** | `A` | `←` (Left Arrow) | Drag Left on screen |
-| **Steer Right** | `D` | `→` (Right Arrow) | Drag Right on screen |
-| **Drift Carve** | Hold Left/Right (> 0.65 steer) | Hold Left/Right | Drag hard toward screen edges |
-| **Nitro Boost** | `Spacebar` | `Shift` | Tap **NITRO** on-screen HUD button |
+| **Steer Left** | `A` | `←` (Left Arrow) | Press **LEFT [◀]** button or Drag Left |
+| **Steer Right** | `D` | `→` (Right Arrow) | Press **RIGHT [▶]** button or Drag Right |
+| **Drift Carve** | Hold Left/Right (> 0.65 steer) | Hold Left/Right | Hold Left/Right buttons |
+| **Nitro Boost** | `Spacebar` | `Shift` | Tap **NITRO [🔥]** on-screen HUD button |
 | **Rival Clash** | Steer into adjacent rival | Ram rival at high speed | Steer into rival contact radius |
 
 ---
@@ -282,3 +282,4 @@ The optimized production bundle will be generated in the `dist/` directory.
 ---
 
 *Submitted for Multimedia Systems Lab Test 2 Evaluation.*
+

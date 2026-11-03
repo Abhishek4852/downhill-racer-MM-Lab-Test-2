@@ -62,6 +62,10 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     // --- Mouse & Touch Drag Steering (Mobile/Tablet & Casual Mouse) ---
     const handlePointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('button, .touch-steer-btn, .nitro-action-trigger, .hud-pause-circular-btn')) {
+        return;
+      }
       touchStartX.current = e.clientX;
     };
 

@@ -54,16 +54,29 @@ export class GameEngine {
     const profile = RacerStorage.getProfile();
     this.topSpeed = this.baseTopSpeed + profile.upgrades.speedLevel * 8;
 
-    // Setup Three.js Renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    // Setup Three.js Renderer (Optimized for both Desktop and Mobile 60 FPS)
+    const isMobileDevice =
+      typeof navigator !== 'undefined' &&
+      (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (typeof window !== 'undefined' && window.innerWidth <= 800));
+
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: !isMobileDevice,
+      powerPreference: 'high-performance',
+      alpha: false,
+      stencil: false,
+      depth: true,
+    });
     this.renderer.setSize(container.clientWidth, container.clientHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const maxDpr = isMobileDevice ? Math.min(window.devicePixelRatio, 1.25) : Math.min(window.devicePixelRatio, 2);
+    this.renderer.setPixelRatio(maxDpr);
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = isMobileDevice ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
     container.appendChild(this.renderer.domElement);
 
     // Build World
     this.world = new DownhillWorld(container, level);
+    this.world.updateCulling(0);
 
     // Initialize Rivals (Matching exact competitor names from video recording!)
     this.initRivals(level.rivalCount);
@@ -235,6 +248,7 @@ export class GameEngine {
 
     // 10. Animate Item rotations, flame jets & falling autumn leaves
     this.world.animateItems(dt, this.playerZ, this.speed);
+    this.world.updateCulling(this.playerZ);
 
     // 11. Check Finish Line
     if (this.playerZ >= this.level.trackLength) {

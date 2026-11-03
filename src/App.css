@@ -558,6 +558,64 @@
   border-radius: 20px;
 }
 
+/* Touch Steering Buttons (Mobile & Touch) */
+.touch-steering-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.touch-steer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: rgba(12, 18, 32, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(56, 189, 248, 0.45);
+  color: #ffffff;
+  padding: 0.6rem 0.95rem;
+  min-width: 72px;
+  min-height: 52px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.05rem;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transform: skewX(-10deg);
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.touch-steer-btn:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+}
+
+.touch-steer-btn:active,
+.touch-steer-btn.active {
+  background: rgba(56, 189, 248, 0.45);
+  border-color: #38bdf8;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.8);
+  transform: skewX(-10deg) scale(0.94);
+}
+
+.touch-steer-btn .steer-btn-text,
+.touch-steer-btn svg {
+  transform: skewX(10deg);
+}
+
 .nitro-action-trigger {
   position: relative;
   background: rgba(10, 15, 25, 0.9);
@@ -1041,4 +1099,32 @@
   background: rgba(56, 189, 248, 0.15);
   border-color: #38bdf8;
   color: #38bdf8;
+}
+
+/* Mobile Responsiveness for In-Game Touch Controls */
+@media (max-width: 768px) {
+  .hud-bottom-row {
+    padding: 0 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+  .touch-steering-hint {
+    display: none;
+  }
+  .touch-steering-cluster {
+    gap: 0.45rem;
+  }
+  .touch-steer-btn {
+    min-width: 66px;
+    min-height: 48px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.76rem;
+  }
+  .nitro-action-trigger {
+    min-width: 86px;
+    min-height: 48px;
+    padding: 0.45rem 0.85rem;
+  }
+  .nitro-btn-text {
+    font-size: 0.95rem;
+  }
 }

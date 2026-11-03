@@ -1,18 +1,74 @@
-import React from 'react';
-import { Flag, Pause, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Flag, Pause, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { GameTelemetry } from '../types/game';
 
 interface DownhillHUDProps {
   telemetry: GameTelemetry;
   onTriggerNitro: () => void;
+  onSteer: (amount: number) => void;
   onPause: () => void;
 }
 
 export const DownhillHUD: React.FC<DownhillHUDProps> = ({
   telemetry,
   onTriggerNitro,
+  onSteer,
   onPause,
 }) => {
+  const [leftActive, setLeftActive] = useState(false);
+  const [rightActive, setRightActive] = useState(false);
+
+  const handleLeftDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    try {
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {
+      // ignore
+    }
+    setLeftActive(true);
+    onSteer(-1);
+  };
+
+  const handleLeftUp = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    try {
+      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+    } catch {
+      // ignore
+    }
+    setLeftActive(false);
+    if (rightActive) {
+      onSteer(1);
+    } else {
+      onSteer(0);
+    }
+  };
+
+  const handleRightDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    try {
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {
+      // ignore
+    }
+    setRightActive(true);
+    onSteer(1);
+  };
+
+  const handleRightUp = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    try {
+      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+    } catch {
+      // ignore
+    }
+    setRightActive(false);
+    if (leftActive) {
+      onSteer(-1);
+    } else {
+      onSteer(0);
+    }
+  };
   const getRankSuffix = (r: number) => {
     if (r === 1) return 'st';
     if (r === 2) return 'nd';
@@ -89,18 +145,57 @@ export const DownhillHUD: React.FC<DownhillHUDProps> = ({
 
       {/* --- BOTTOM CONTROLS & BOOST --- */}
       <div className="hud-bottom-row">
-        {/* Mobile/Mouse Steering Instruction */}
+        {/* Mobile / Touch Steering Buttons: LEFT & RIGHT */}
+        <div className="touch-steering-cluster">
+          <button
+            type="button"
+            className={`touch-steer-btn steer-left ${leftActive ? 'active' : ''}`}
+            onPointerDown={handleLeftDown}
+            onPointerUp={handleLeftUp}
+            onPointerLeave={handleLeftUp}
+            onPointerCancel={handleLeftUp}
+            title="Steer Left"
+            aria-label="Steer Left"
+          >
+            <ChevronLeft size={26} />
+            <span className="steer-btn-text">LEFT</span>
+          </button>
+          <button
+            type="button"
+            className={`touch-steer-btn steer-right ${rightActive ? 'active' : ''}`}
+            onPointerDown={handleRightDown}
+            onPointerUp={handleRightUp}
+            onPointerLeave={handleRightUp}
+            onPointerCancel={handleRightUp}
+            title="Steer Right"
+            aria-label="Steer Right"
+          >
+            <span className="steer-btn-text">RIGHT</span>
+            <ChevronRight size={26} />
+          </button>
+        </div>
+
+        {/* Center Hint (Desktop/Touch) */}
         <div className="touch-steering-hint">
-          <span>Drag left/right or A / D to steer</span>
+          <span>A / D or Tap Buttons</span>
         </div>
 
         {/* Nitro Boost Action Button */}
         <button
+          type="button"
           className={`nitro-action-trigger ${telemetry.nitro >= 25 ? 'ready' : 'empty'} ${
             telemetry.isNitroActive ? 'ignited' : ''
           }`}
-          onClick={onTriggerNitro}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            onTriggerNitro();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onTriggerNitro();
+          }}
           title="Boost Nitro [SPACE]"
+          aria-label="Boost Nitro"
         >
           <div className="nitro-btn-inner">
             <span className="nitro-flame-icon">🔥</span>

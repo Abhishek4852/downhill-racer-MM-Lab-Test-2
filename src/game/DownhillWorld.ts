@@ -56,11 +56,18 @@ export class DownhillWorld {
     const ambientLight = new THREE.AmbientLight(0xfff6ea, 0.85);
     this.scene.add(ambientLight);
 
+    const isMobileDevice =
+      typeof navigator !== 'undefined' &&
+      (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (typeof window !== 'undefined' && window.innerWidth <= 800));
+
     const sunLight = new THREE.DirectionalLight(0xfffaed, 1.35);
     sunLight.position.set(50, 90, 40);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
+    sunLight.shadow.mapSize.width = isMobileDevice ? 512 : 1024;
+    sunLight.shadow.mapSize.height = isMobileDevice ? 512 : 1024;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 400;
     this.scene.add(sunLight);
 
     // 4. Player Skater (Blue hoodie + green hair + purple shoes)
@@ -529,7 +536,11 @@ export class DownhillWorld {
   }
 
   private buildFallingLeaves(): void {
-    const leafCount = 120;
+    const isMobileDevice =
+      typeof navigator !== 'undefined' &&
+      (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (typeof window !== 'undefined' && window.innerWidth <= 800));
+    const leafCount = isMobileDevice ? 50 : 120;
     const geo = new THREE.BufferGeometry();
     this.leavesPositions = new Float32Array(leafCount * 3);
 
@@ -794,6 +805,40 @@ export class DownhillWorld {
         }
       }
       this.leavesSystem.geometry.attributes.position.needsUpdate = true;
+    }
+  }
+
+  // Dynamic Distance Culling: Keeps 60 FPS on mobile devices with zero visual change
+  public updateCulling(playerZ: number): void {
+    const minZ = playerZ - 30;
+    const maxZ = playerZ + 320;
+
+    // Roadside trees, curbs, signs, wildflowers, banks
+    const roadside = this.roadsideObjects.children;
+    for (let i = 0; i < roadside.length; i++) {
+      const z = roadside[i].position.z;
+      roadside[i].visible = z >= minZ && z <= maxZ;
+    }
+
+    // Road segments
+    const segments = this.roadSegments;
+    for (let i = 0; i < segments.length; i++) {
+      const z = segments[i].position.z;
+      segments[i].visible = z >= minZ && z <= maxZ;
+    }
+
+    // Tunnel and tube segments
+    const tunnels = this.tunnelGroup.children;
+    for (let i = 0; i < tunnels.length; i++) {
+      const z = tunnels[i].position.z;
+      tunnels[i].visible = z >= minZ && z <= maxZ;
+    }
+
+    // Collectible items & obstacles
+    const items = this.itemsGroup.children;
+    for (let i = 0; i < items.length; i++) {
+      const z = items[i].position.z;
+      items[i].visible = z >= minZ && z <= maxZ;
     }
   }
 }

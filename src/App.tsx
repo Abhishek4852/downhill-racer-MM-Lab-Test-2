@@ -67,6 +67,7 @@ export const App: React.FC = () => {
             <DownhillHUD
               telemetry={telemetry}
               onTriggerNitro={() => engineRef.current?.triggerNitro()}
+              onSteer={(val) => engineRef.current?.setSteer(val)}
               onPause={() => setScreen('MENU')}
             />
           )}
